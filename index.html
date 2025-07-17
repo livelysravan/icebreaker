@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instant Icebreaker Spinner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0a;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 0%, #888888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            font-weight: 400;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            border-color: #555;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(100, 150, 255, 0.3);
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, #1a1a1a 0%, #111 100%);
+            border-color: #444;
+        }
+
+        .result-box {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .result-heading {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #64b5f6;
+        }
+
+        .result-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #e0e0e0;
+            font-weight: 400;
+        }
+
+        .back-btn {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #333;
+            border-radius: 50%;
+            border-top-color: #64b5f6;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 1px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 350px;
+                padding: 0 10px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+                margin-bottom: 2rem;
+            }
+            
+            .btn {
+                padding: 0.875rem 1.5rem;
+                font-size: 1rem;
+            }
+            
+            .result-box {
+                padding: 1.5rem;
+            }
+            
+            .result-heading {
+                font-size: 1.2rem;
+            }
+            
+            .result-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Main Menu -->
+        <div class="screen active" id="mainScreen">
+            <h1 class="title">Icebreaker Spinner</h1>
+            <p class="subtitle">Break the ice with fun questions!</p>
+            
+            <div class="button-group">
+                <button class="btn primary" onclick="spinQuestion()">
+                    🎯 Get Random Question
+                </button>
+            </div>
+        </div>
+
+        <!-- Question Result -->
+        <div class="screen" id="questionScreen">
+            <div class="result-box">
+                <h2 class="result-heading">Your Question</h2>
+                <p class="result-text" id="questionText"></p>
+            </div>
+            <button class="btn back-btn" onclick="spinQuestion()">🎯 Spin Again</button>
+        </div>
+
+        <!-- Loading Screen -->
+        <div class="screen" id="loadingScreen">
+            <div class="result-box">
+                <h2 class="result-heading">
+                    <span class="spinner"></span>
+                    Spinning...
+                </h2>
+                <p class="result-text">Getting your perfect icebreaker!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            "What's your wildest fantasy you've never told anyone?",
+            "Have you ever sent a message you instantly regretted?",
+            "What's the most embarrassing thing you've done on a date?",
+            "Describe your perfect kiss—in one word.",
+            "Who in this room would you kiss right now if you could?",
+            "What's your secret move to get someone's attention?",
+            "Ever had a 'friends with benefits' situation? Spill the tea!",
+            "What's the naughtiest thing you've done in public?",
+            "If you had to rate your flirting skills out of 10, what would you give?",
+            "Which song gets you in the mood every time?",
+            "What's a surefire way to turn you on?",
+            "Tell us about the most awkward flirting moment you've had.",
+            "Have you ever flirted with someone just to get what you wanted?",
+            "What's the most outrageous dare you'd do on a dare night?",
+            "Have you ever had a crush on someone totally off-limits?",
+            "What's your go-to move to break the ice in a flirty way?",
+            "If you could spend a night with any celebrity, who would it be?",
+            "What's the craziest place you've hooked up?",
+            "Do you believe in love at first sight or lust at first sight?",
+            "What's your guilty pleasure song that makes you want to dance dirty?",
+            "Who's your celebrity crush and why?",
+            "If you had to pick a pickup line, what would it be?",
+            "Show us your most seductive look (right now).",
+            "Read the most recent text you sent in a flirty voice.",
+            "Would you rather skinny dip or streak through the room?",
+            "Describe your best make-out session in three words.",
+            "If you could DM anyone here with one emoji, who and what would it be?",
+            "What's something you find inexplicably hot?",
+            "Dared: Give a lap dance—no excuses!",
+            "What's one thing you wish you could say to your crush right now?",
+            "How many people in this room would you swipe right on?",
+            "Share a 'dirty little secret' nobody here knows."
+        ];
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function spinQuestion() {
+            // Show loading screen
+            showScreen('loadingScreen');
+            
+            // Simulate spinning delay
+            setTimeout(() => {
+                const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+                document.getElementById('questionText').textContent = randomQuestion;
+                showScreen('questionScreen');
+            }, 1500);
+        }
+
+        function goBack() {
+            showScreen('mainScreen');
+        }
+
+        // Add some visual feedback for button presses
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn')) {
+                e.target.style.transform = 'translateY(1px)';
+                setTimeout(() => {
+                    e.target.style.transform = '';
+                }, 100);
+            }
+        });
+
+        // Add keyboard support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                goBack();
+            }
+        });
+    </script>
+</body>
+</html>
